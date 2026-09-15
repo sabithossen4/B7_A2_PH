@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { pool } from "../../db";
+import { userService } from "./user.service";
 
 const createUser =  async (req: Request, res: Response) => {
   // console.log(req.body);
