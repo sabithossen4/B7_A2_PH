@@ -43,10 +43,13 @@ const loginUserIntoDB = async(payload:{
 
     const accessToken = jwt.sign(jwtpayload,config.secret as string , { 
         expiresIn: "1d"
-        
+    });
+    
+    const refreshToken = jwt.sign(jwtpayload,config.refresh_secret as string , { 
+        expiresIn: "2d"
     });
 
-    return {accessToken};
+    return {accessToken, refreshToken};
 };
 
 
