@@ -1,36 +1,31 @@
 import express, { type Application, type Request, type Response } from "express";
-import { userRoute } from "./modules/user/user.route";
-import { profileRoute } from "./modules/profile/profile.route";
-import { authRouter } from "./auth/auth.route";
-import logger from "./middleware/logger";
-import CookieParser from "cookie-parser";
 import cors from "cors";
-import globalErrorHandler from "./middleware/globalErrorHandler";
+import { StatusCodes } from "http-status-codes";
+import config from "./config/index.js";
+import globalErrorHandler from "./middleware/globalErrorHandler.js";
+import { authRouter } from "./modules/auth/auth.route.js";
+import { issueRouter } from "./modules/issue/issue.route.js";
+import { AppError } from "./utils/appError.js";
 
 const app: Application = express();
 
-app.use(CookieParser());
+app.use(cors({ origin: config.corsOrigin }));
 app.use(express.json());
-app.use(logger);
-app.use('/api/users', userRoute);
-app.use('/api/profile', profileRoute);
-app.use('/api/auth',authRouter )
-const corsOptions = {
-  origin: 'http://localhost:3000'
-}
-app.use(cors(corsOptions));
 
+app.get("/", (_req: Request, res: Response) => {
+  res.status(StatusCodes.OK).json({
+    success: true,
+    message: "DevPulse API is running",
+  });
+});
 
-app.get('/', (req: Request, res: Response) => {
-  //   res.send('Hello World!');
-  res.status(200).json({
-    message: "Express Server",
-    author: "Sabit"
-  })
- }
-);
+app.use("/api/auth", authRouter);
+app.use("/api/issues", issueRouter);
 
-// Global Error Handling Middleware
+app.use((_req: Request, _res: Response, next) => {
+  next(new AppError(StatusCodes.NOT_FOUND, "Route not found"));
+});
+
 app.use(globalErrorHandler);
 
 export default app;

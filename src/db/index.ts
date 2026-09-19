@@ -1,43 +1,53 @@
 import { Pool } from "pg";
-import config from "../config";
+import config from "../config/index.js";
 
 export const pool = new Pool({
-  connectionString: config.connection_string,
-})
+  connectionString: config.connectionString,
+});
 
 export const initDB = async () => {
-  try {
-    await pool.query(`
-        CREATE TABLE if NOT EXISTS userS (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(20),
-        email VARCHAR(50) UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        is_active BOOLEAN DEFAULT true,
-        age INT,
-        role VARCHAR(10) DEFAULT 'user',
+  await pool.query(`
+    CREATE SCHEMA IF NOT EXISTS devpulse;
 
-        created_at TIMESTAMP DEFAULT NOW(),
-        updated_at TIMESTAMP DEFAULT NOW()
-        )
-        `);
+    CREATE TABLE IF NOT EXISTS devpulse.users (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      role VARCHAR(20) NOT NULL DEFAULT 'contributor'
+        CHECK (role IN ('contributor', 'maintainer')),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
 
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS profiles(
-        id SERIAL PRIMARY KEY,
-        user_id INT UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-        bio TEXT,
-        address TEXT,
-        phone VARCHAR(15),
-        gender VARCHAR(10),
+    CREATE TABLE IF NOT EXISTS devpulse.issues (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(150) NOT NULL,
+      description TEXT NOT NULL CHECK (char_length(description) >= 20),
+      type VARCHAR(20) NOT NULL CHECK (type IN ('bug', 'feature_request')),
+      status VARCHAR(20) NOT NULL DEFAULT 'open'
+        CHECK (status IN ('open', 'in_progress', 'resolved')),
+      reporter_id INTEGER NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
 
-        created_at TIMESTAMP DEFAULT NOW(),
-        updated_at TIMESTAMP DEFAULT NOW()
-      ) 
-      `);
+    CREATE OR REPLACE FUNCTION devpulse.set_updated_at()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      NEW.updated_at = NOW();
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
 
-    console.log("Table Created Successfully");
-  } catch (error) {
-    console.log(error);
-  }
-}
+    DROP TRIGGER IF EXISTS users_set_updated_at ON devpulse.users;
+    CREATE TRIGGER users_set_updated_at
+      BEFORE UPDATE ON devpulse.users
+      FOR EACH ROW EXECUTE FUNCTION devpulse.set_updated_at();
+
+    DROP TRIGGER IF EXISTS issues_set_updated_at ON devpulse.issues;
+    CREATE TRIGGER issues_set_updated_at
+      BEFORE UPDATE ON devpulse.issues
+      FOR EACH ROW EXECUTE FUNCTION devpulse.set_updated_at();
+  `);
+};

@@ -1,76 +1,54 @@
 import type { NextFunction, Request, Response } from "express";
-import  jwt, { type JwtPayload }  from "jsonwebtoken";
-import config from "../config";
-import { pool } from "../db";
-import type { ROLES } from "../types/index";
+import jwt, { type JwtPayload } from "jsonwebtoken";
+import { StatusCodes } from "http-status-codes";
+import config from "../config/index.js";
+import { USER_ROLES, type AuthUser, type UserRole } from "../types/index.js";
+import { AppError } from "../utils/appError.js";
 
-const auth = (...roles: ROLES[]) => {
-  
-  return async (req: Request, res: Response, next: NextFunction) => {
-    console.log(roles);
-   try{
-     console.log("This is protected Route")
-    console.log(req.headers.authorization);
-    
-    const token = req.headers.authorization;
+const isUserRole = (value: unknown): value is UserRole =>
+  typeof value === "string" && USER_ROLES.some((role) => role === value);
 
-    console.log(token)
-
-    if (!token) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized acces!!"
-      });
-    }
-
-    // verify a token symmetric - synchronous
-    var decoded = jwt.verify(token as string, config.secret as string) as JwtPayload;
-    // console.log(decoded)
-
-    const userData = await pool.query(`
-      SELECT * FROM users WHERE email=$1
-      `,
-      [decoded.email]
-    )
-    // console.log(userData);
-
-    const user = userData.rows[0];
-    // console.log(user);
-
-
-    if(userData.rows.length ===0){
-      res.status(404).json({
-        success: false,
-        message: "User not found"
-      })
-    }
-
-    if(!user?.is_active) {
-      res.status(403).json({
-        success: false,
-        message: "Forbeden!!"
-      })
-    }
-
-    console.log("auth role", user.role)
-
-    if(roles.length && !roles.includes(user.role)) {
-      res.status(403).json({
-        success: false,
-        message: "Forbidden!!, This role is have no access!"
-      })
-    }
-
-    req.user = user;
-
-
-    next();
-
-   }catch(error){
-
-    next(error)
-   }
+const toAuthUser = (payload: string | JwtPayload): AuthUser => {
+  if (
+    typeof payload === "string"
+    || typeof payload.id !== "number"
+    || typeof payload.name !== "string"
+    || !isUserRole(payload.role)
+  ) {
+    throw new AppError(StatusCodes.UNAUTHORIZED, "Invalid JWT token");
   }
-}
+  return { id: payload.id, name: payload.name, role: payload.role };
+};
 
-export default auth
+const auth = (...allowedRoles: UserRole[]) =>
+  (req: Request, _res: Response, next: NextFunction): void => {
+    try {
+      const authorization = req.headers.authorization;
+      if (!authorization) {
+        throw new AppError(StatusCodes.UNAUTHORIZED, "JWT token is required");
+      }
+
+      const token = authorization.startsWith("Bearer ")
+        ? authorization.slice(7).trim()
+        : authorization.trim();
+      if (!token) {
+        throw new AppError(StatusCodes.UNAUTHORIZED, "JWT token is required");
+      }
+
+      const user = toAuthUser(jwt.verify(token, config.jwtSecret));
+      if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+        throw new AppError(StatusCodes.FORBIDDEN, "You do not have permission to perform this action");
+      }
+
+      req.user = user;
+      next();
+    } catch (error: unknown) {
+      if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.TokenExpiredError) {
+        next(new AppError(StatusCodes.UNAUTHORIZED, "Invalid or expired JWT token"));
+        return;
+      }
+      next(error);
+    }
+  };
+
+export default auth;
