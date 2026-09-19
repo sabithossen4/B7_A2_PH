@@ -3,12 +3,12 @@ import { userRoute } from "./modules/user/user.route";
 import { profileRoute } from "./modules/profile/profile.route";
 import { authRouter } from "./auth/auth.route";
 import logger from "./middleware/logger";
-
+import CookieParser from "cookie-parser";
 
 const app: Application = express();
 
+app.use(CookieParser());
 app.use(express.json());
-
 app.use(logger);
 app.use('/api/users', userRoute);
 app.use('/api/profile', profileRoute);

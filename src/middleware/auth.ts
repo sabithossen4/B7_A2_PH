@@ -11,6 +11,7 @@ const auth = (...roles: ROLES[]) => {
    try{
      console.log("This is protected Route")
     console.log(req.headers.authorization);
+    
     const token = req.headers.authorization;
 
     console.log(token)
