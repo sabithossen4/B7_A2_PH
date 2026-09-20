@@ -79,7 +79,7 @@ The server creates an isolated PostgreSQL schema named `devpulse` and initialize
 | `PATCH` | `/api/issues/:id` | Authenticated | Update an issue according to role rules |
 | `DELETE` | `/api/issues/:id` | Maintainer | Delete an issue |
 
-Send the login token in the `Authorization` header. The API accepts the assignment format (`Authorization: <token>`) and the standard Bearer format (`Authorization: Bearer <token>`).
+Send the login token directly in the `Authorization` header using the assignment format (`Authorization: <token>`).
 
 ### Issue Query Parameters
 

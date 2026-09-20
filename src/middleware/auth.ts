@@ -28,9 +28,7 @@ const auth = (...allowedRoles: UserRole[]) =>
         throw new AppError(StatusCodes.UNAUTHORIZED, "JWT token is required");
       }
 
-      const token = authorization.startsWith("Bearer ")
-        ? authorization.slice(7).trim()
-        : authorization.trim();
+      const token = authorization.trim();
       if (!token) {
         throw new AppError(StatusCodes.UNAUTHORIZED, "JWT token is required");
       }
