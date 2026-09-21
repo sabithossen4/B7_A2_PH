@@ -5,10 +5,10 @@ import {
   ISSUE_TYPES,
   type IssueStatus,
   type IssueType,
-} from "../../types/index.js";
-import { AppError } from "../../utils/appError.js";
-import { rejectUnknownFields, requireRequestBody } from "../../utils/validation.js";
-import type { CreateIssueInput, IssueFilters, UpdateIssueInput } from "./issue.interface.js";
+} from "../../types";
+import { AppError } from "../../utils/appError";
+import { rejectUnknownFields, requireRequestBody } from "../../utils/validation";
+import type { CreateIssueInput, IssueFilters, UpdateIssueInput } from "./issue.interface";
 
 const parseTitle = (value: unknown): string => {
   if (typeof value !== "string" || value.trim().length === 0) {

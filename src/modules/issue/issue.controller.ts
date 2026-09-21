@@ -1,14 +1,14 @@
 import type { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "../../utils/appError.js";
-import { sendSuccess } from "../../utils/response.js";
-import { parsePositiveInteger } from "../../utils/validation.js";
-import { issueService } from "./issue.service.js";
+import { AppError } from "../../utils/appError";
+import { sendSuccess } from "../../utils/response";
+import { parsePositiveInteger } from "../../utils/validation";
+import { issueService } from "./issue.service";
 import {
   validateCreateIssue,
   validateIssueFilters,
   validateUpdateIssue,
-} from "./issue.validation.js";
+} from "./issue.validation";
 
 const authenticatedUser = (req: Request) => {
   if (!req.user) {

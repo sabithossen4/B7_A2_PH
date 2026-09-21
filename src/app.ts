@@ -1,11 +1,11 @@
 import express, { type Application, type Request, type Response } from "express";
 import cors from "cors";
 import { StatusCodes } from "http-status-codes";
-import config from "./config/index.js";
-import globalErrorHandler from "./middleware/globalErrorHandler.js";
-import { authRouter } from "./modules/auth/auth.route.js";
-import { issueRouter } from "./modules/issue/issue.route.js";
-import { AppError } from "./utils/appError.js";
+import config from "./config";
+import globalErrorHandler from "./middleware/globalErrorHandler";
+import { authRouter } from "./modules/auth/auth.route";
+import { issueRouter } from "./modules/issue/issue.route";
+import { AppError } from "./utils/appError";
 
 const app: Application = express();
 

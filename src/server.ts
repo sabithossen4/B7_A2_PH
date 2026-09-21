@@ -1,6 +1,6 @@
-import app from "./app.js";
-import config from "./config/index.js";
-import { initDB } from "./db/index.js";
+import app from "./app";
+import config from "./config";
+import { initDB } from "./db";
 
 const main = async (): Promise<void> => {
   try {

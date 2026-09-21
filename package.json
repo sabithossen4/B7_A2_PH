@@ -1,15 +1,11 @@
 {
   "name": "b7_a2_ph",
   "version": "1.0.0",
-  "description": "DevPulse internal tech issue and feature tracker API",
-  "main": "dist/server.js",
+  "description": "",
+  "main":"index.js",
   "scripts": {
     "dev": "tsx watch ./src/server.ts",
-    "build": "tsc",
-    "start": "node ./dist/server.js",
-    "typecheck": "tsc --noEmit",
-    "test:static": "npm run build && node ./scripts/static-smoke-test.mjs",
-    "test": "npm run build && node ./scripts/smoke-test.mjs"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

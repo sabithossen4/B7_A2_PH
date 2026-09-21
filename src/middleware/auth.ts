@@ -1,9 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
-import config from "../config/index.js";
-import { USER_ROLES, type AuthUser, type UserRole } from "../types/index.js";
-import { AppError } from "../utils/appError.js";
+import config from "../config";
+import { USER_ROLES, type AuthUser, type UserRole } from "../types";
+import { AppError } from "../utils/appError";
 
 const isUserRole = (value: unknown): value is UserRole =>
   typeof value === "string" && USER_ROLES.some((role) => role === value);

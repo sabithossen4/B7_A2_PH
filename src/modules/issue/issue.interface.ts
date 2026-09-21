@@ -1,4 +1,4 @@
-import type { IssueStatus, IssueType, UserRole } from "../../types/index.js";
+import type { IssueStatus, IssueType, UserRole } from "../../types";
 
 export interface IssueRow {
   id: number;

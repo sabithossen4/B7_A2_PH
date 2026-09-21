@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import { AppError } from "./appError.js";
+import { AppError } from "./appError";
 
 export const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);

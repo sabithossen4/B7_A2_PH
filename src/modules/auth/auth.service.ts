@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt, { type SignOptions } from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
-import { pool } from "../../db/index.js";
-import config from "../../config/index.js";
-import { AppError } from "../../utils/appError.js";
-import type { LoginInput, PublicUser, SignupInput } from "./auth.interface.js";
+import { pool } from "../../db";
+import config from "../../config";
+import { AppError } from "../../utils/appError";
+import type { LoginInput, PublicUser, SignupInput } from "./auth.interface";
 
 interface UserWithPassword extends PublicUser {
   password: string;

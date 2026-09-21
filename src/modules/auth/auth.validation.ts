@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
-import { USER_ROLES, type UserRole } from "../../types/index.js";
-import { AppError } from "../../utils/appError.js";
-import { rejectUnknownFields, requireRequestBody } from "../../utils/validation.js";
-import type { LoginInput, SignupInput } from "./auth.interface.js";
+import { USER_ROLES, type UserRole } from "../../types";
+import { AppError } from "../../utils/appError";
+import { rejectUnknownFields, requireRequestBody } from "../../utils/validation";
+import type { LoginInput, SignupInput } from "./auth.interface";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

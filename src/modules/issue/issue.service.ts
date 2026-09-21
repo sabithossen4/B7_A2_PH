@@ -1,7 +1,7 @@
 import { StatusCodes } from "http-status-codes";
-import { pool } from "../../db/index.js";
-import type { AuthUser, IssueStatus, IssueType } from "../../types/index.js";
-import { AppError } from "../../utils/appError.js";
+import { pool } from "../../db";
+import type { AuthUser, IssueStatus, IssueType } from "../../types";
+import { AppError } from "../../utils/appError";
 import type {
   CreateIssueInput,
   IssueFilters,
@@ -9,7 +9,7 @@ import type {
   IssueRow,
   Reporter,
   UpdateIssueInput,
-} from "./issue.interface.js";
+} from "./issue.interface";
 
 const findIssueRow = async (id: number): Promise<IssueRow> => {
   const result = await pool.query<IssueRow>(`
